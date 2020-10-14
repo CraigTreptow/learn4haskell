@@ -663,7 +663,7 @@ Write a function that takes elements of a list only on even positions.
 [2,3,4]
 -}
 takeEven :: [a] -> [a]
-takeEven (x:xx:xs) = [x] ++ takeEven xs
+takeEven (x:_:xs) = x : takeEven xs
 takeEven [x]       = [x]
 takeEven []        = []
 
