@@ -344,6 +344,12 @@ of a book, but you are not limited only by the book properties we described.
 Create your own book type of your dreams!
 -}
 
+data Book = MkBook
+    { bookTitle  :: String
+    , bookAuthor :: String
+    , bookPages  :: Int
+    , bookISBN   :: String
+    }
 {- |
 =⚔️= Task 2
 
@@ -373,6 +379,34 @@ after the fight. The battle has the following possible outcomes:
    doesn't earn any money and keeps what they had before.
 
 -}
+type Health = Int
+type Attack = Int
+type Gold   = Int
+
+data Knight = MkKnight { knightHealth :: Health, knightAttack :: Attack, knightGold :: Gold }
+data Monster = MkMonster { monsterHealth :: Health, monsterAttack :: Attack, monsterGold :: Gold }
+
+fight :: Knight -> Monster -> Gold
+fight k m
+  | (knightAttack k) == (monsterHealth m) = knightGold k
+  | otherwise = if (monsterHealth m' > 0)
+                   then getResultingGold k' m'
+                   else (knightGold k) + (monsterGold m')
+  where m' = knightAttacksMonster k m
+        k' = monsterAttacksKnight m k
+
+knightAttacksMonster :: Knight -> Monster -> Monster
+knightAttacksMonster k m = m { monsterHealth = (monsterHealth m) - (knightAttack k) }
+
+monsterAttacksKnight :: Monster -> Knight -> Knight
+monsterAttacksKnight m k = k { knightHealth = (knightHealth k) - (monsterAttack m) }
+
+getResultingGold :: Knight -> Monster -> Gold
+getResultingGold k m
+  | kH  > 0   = (knightGold k) + (monsterGold m)
+  | kH == 0   = knightGold k
+  | otherwise = -1
+  where kH = knightHealth k
 
 {- |
 =🛡= Sum types
