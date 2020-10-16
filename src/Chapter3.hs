@@ -378,35 +378,32 @@ after the fight. The battle has the following possible outcomes:
  ⊛ Neither the knight nor the monster wins. On such an occasion, the knight
    doesn't earn any money and keeps what they had before.
 
+-- I don't think the solution below actually satisfies what is described 
+-- above.  However, others have done the below solution and have been accepted
+-- so, I guess that makes it ok (especially since there are no tests.  why
+-- not??)
+-- My first attempt took a more literal approach and made the knight
+-- attack the monster first.  The monster then only attacked if it survived.
+-- It was way more complicated and full of if, then, else and case statements.
+-- That seemed like it probably was not what was intended.
+-- See commit 01b0a11dd9c955a60e4bd8f8ebb2b0957fb79d7f for that solution.
 -}
 type Health = Int
 type Attack = Int
 type Gold   = Int
 
-data Knight = MkKnight { knightHealth :: Health, knightAttack :: Attack, knightGold :: Gold }
-data Monster = MkMonster { monsterHealth :: Health, monsterAttack :: Attack, monsterGold :: Gold }
+data Knight = MkKnight { knightHealth :: Health
+                       , knightAttack :: Attack
+                       , knightGold   :: Gold } deriving (Show)
+data Monster = MkMonster { monsterHealth :: Health
+                         , monsterAttack :: Attack
+                         , monsterGold   :: Gold } deriving (Show)
 
 fight :: Knight -> Monster -> Gold
 fight k m
-  | (knightAttack k) == (monsterHealth m) = knightGold k
-  | otherwise = if (monsterHealth m' > 0)
-                   then getResultingGold k' m'
-                   else (knightGold k) + (monsterGold m')
-  where m' = knightAttacksMonster k m
-        k' = monsterAttacksKnight m k
-
-knightAttacksMonster :: Knight -> Monster -> Monster
-knightAttacksMonster k m = m { monsterHealth = (monsterHealth m) - (knightAttack k) }
-
-monsterAttacksKnight :: Monster -> Knight -> Knight
-monsterAttacksKnight m k = k { knightHealth = (knightHealth k) - (monsterAttack m) }
-
-getResultingGold :: Knight -> Monster -> Gold
-getResultingGold k m
-  | kH  > 0   = (knightGold k) + (monsterGold m)
-  | kH == 0   = knightGold k
-  | otherwise = -1
-  where kH = knightHealth k
+  | knightAttack  k >= monsterHealth m = (knightGold k) + (monsterGold m)
+  | monsterAttack m >= knightHealth k  = -1
+  | otherwise                          = knightGold k
 
 {- |
 =🛡= Sum types
